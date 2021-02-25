@@ -59,7 +59,7 @@ pairedstats <- function(.data, .var, .val, .group, .fun = "difference", .pair1 =
 
 
 
-  if (.fun %in% c("difference")) {
+  if (.fun %in% c("difference" , "difference_log", "ratio", "ratio_log")) {
     pairedstats_class <- "pairedscalar"
     pairedstats_data <- pairedstats_data[, c(".pair1", ".pair2", ".group", ".val1", ".val2", "metric"), drop = FALSE]
     colnames(pairedstats_data) <- c(".pair1", ".pair2", .group, paste0("agg_", .val, "1"), paste0("agg_", .val, "2"), "metric")
@@ -83,6 +83,27 @@ difference <- function(paired_split) {
   paired_split[, c("index", ".group", ".val1", ".val2", "metric"), drop = FALSE]
 }
 
+difference_log <- function(paired_split) {
+  if (any(paired_split[[".val1"]] < 0) || any(paired_split[[".val2"]] < 0)) {
+    stop("Negative values cannot be logged")
+  }
+  paired_split$metric <- log(paired_split[[".val1"]]) - log(paired_split[[".val2"]])
+  paired_split[, c("index", ".group", ".val1", ".val2", "metric"), drop = FALSE]
+}
+
+ratio <- function(paired_split) {
+  paired_split$metric <- paired_split[[".val1"]] / paired_split[[".val2"]]
+  paired_split[, c("index", ".group", ".val1", ".val2", "metric"), drop = FALSE]
+}
+
+ratio_log <- function(paired_split) {
+  if (any(paired_split[[".val1"]] < 0) || any(paired_split[[".val2"]] < 0)) {
+    stop("Negative values cannot be logged")
+  }
+  paired_split$metric <- log(paired_split[[".val1"]]) / log(paired_split[[".val2"]])
+  paired_split[, c("index", ".group", ".val1", ".val2", "metric"), drop = FALSE]
+}
+
 correlation <- function(paired_split, ...) {
   paired_split_small <- unique(paired_split[, c("index", ".pair1", ".pair2"), drop = FALSE])
   if (nrow(paired_split) >= 3) {
@@ -101,8 +122,11 @@ get_pairedstats_data <- function(stats_df, .slim, .fun, index_data, index_data_n
   } else {
     index_data_small <- index_data[, c("index", "copy" , ".pair1", ".pair2"), drop = FALSE]
     pairedstats_data <- merge(index_data_small, stats_df[, nonpaircols, drop = FALSE], by = "index")
-    if (.fun %in% c("difference")) {
+    if (.fun %in% c("difference", "difference_log")) {
       pairedstats_data$metric <- ifelse(pairedstats_data$copy, -1 * pairedstats_data$metric, pairedstats_data$metric)
+    }
+    if (.fun %in% c("ratio", "ratio_log")) {
+      pairedstats_data$metric <- ifelse(pairedstats_data$copy, 1 / pairedstats_data$metric, pairedstats_data$metric)
     }
   }
   pairedstats_data
