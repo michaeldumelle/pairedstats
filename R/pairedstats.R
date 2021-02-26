@@ -65,7 +65,7 @@ pairedstats <- function(.data, .var, .val, .group, .fun = "difference", .pair1 =
     colnames(pairedstats_data) <- c(".pair1", ".pair2", .group, paste0("agg_", .val, "1"), paste0("agg_", .val, "2"), "metric")
   } else if (.fun == "correlation") {
     pairedstats_class <- "corrclass"
-    pairedstats_data <- pairedstats_data[, c(".pair1", ".pair2", "metric"), drop = FALSE]
+    pairedstats_data <- pairedstats_data[, c(".pair1", ".pair2", "n_pairs", "metric"), drop = FALSE]
     if (any(is.na(pairedstats_data$metric))) message("Warning: At least one set of pairs had fewer than 3 observations -- returning NA's for that pair")
     #colnames(pairedstats_data) <- c(".pair1", ".pair2", "metric")
   }
@@ -106,12 +106,13 @@ ratio_log <- function(paired_split) {
 
 correlation <- function(paired_split, ...) {
   paired_split_small <- unique(paired_split[, c("index", ".pair1", ".pair2"), drop = FALSE])
+  paired_split_small$n_pairs <- nrow(paired_split)
   if (nrow(paired_split) >= 3) {
     paired_split_small$metric <- list(cor.test(paired_split$.val1, paired_split$.val2, ...))
   } else {
     paired_split_small$metric <- NA
   }
-  paired_split_small[, c("index", ".pair1", ".pair2", "metric"), drop = FALSE]
+  paired_split_small[, c("index", ".pair1", ".pair2", "n_pairs", "metric"), drop = FALSE]
 }
 
 get_pairedstats_data <- function(stats_df, .slim, .fun, index_data, index_data_nocopy) {
