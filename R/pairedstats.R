@@ -35,7 +35,8 @@ pairedstats <- function(.data, .var, .val, .group, .fun = "difference", .pair1 =
   unique_groups <- unique(.data[[.group]])
 
   # subset data to only include relevant values and columns
-  .data <- .data[.data[[.var]] %in% unique_pairvals, c(.var, .val, .group), drop = FALSE]
+  .data <- .data[.data[[.var]] %in% unique_pairvals,
+                 c(.var, .val, .group), drop = FALSE]
 
   # aggregate data for a summary statistic by fun_aggregate
   aggregated_data <- aggregate(
@@ -61,7 +62,10 @@ pairedstats <- function(.data, .var, .val, .group, .fun = "difference", .pair1 =
 
   if (.fun %in% c("difference" , "difference_log", "ratio", "ratio_log")) {
     pairedstats_class <- "pairedscalar"
-    pairedstats_data <- pairedstats_data[, c(".pair1", ".pair2", ".group", ".val1", ".val2", "metric"), drop = FALSE]
+    pairedstats_data <- pairedstats_data[, c(".pair1", ".pair2",
+                                             ".group", ".val1",
+                                             ".val2", "metric"),
+                                         drop = FALSE]
     colnames(pairedstats_data) <- c(".pair1", ".pair2", .group, paste0("agg_", .val, "1"), paste0("agg_", .val, "2"), "metric")
   } else if (.fun == "correlation") {
     pairedstats_class <- "corrclass"
