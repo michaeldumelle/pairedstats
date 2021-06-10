@@ -1,0 +1,23 @@
+# to do
+
+1. just reread functions
+
+2. non standard evaluation for arguments
+
+3. better function names for the calculations
+
+4. work with user defined functions
+
+5. default arguments
+
+6. plotting function
+
+7. function to return matrix of correlations
+
+8. categorical resposne for proportions?
+
+9. thinking about .pair1 and .pair2
+
+10. confidence intervals with cor estimates
+
+11. if .pair2 is null then do all combinations? instead of repeating .pair1
